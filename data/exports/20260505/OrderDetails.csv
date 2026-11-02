@@ -1,0 +1,14 @@
+Location,Order Id,Order #,Checks,Opened,# of Guests,Tab Names,Server,Table,Revenue Center,Dining Area,Service,Dining Options,Discount Amount,Amount,Tax,Tip,Gratuity,Total,Voided,Paid,Closed,Duration (Opened to Paid),Order Source
+1351 Main Street,1700000000703170794,1,1,5/5/26 3:43 PM,3,,Nestor Ceballos,75,Dining Room,Dining Room,Lunch,Dine In,0.00,68.57,5.46,14.29,0.00,88.32,false,5/5/26 3:50 PM,5/5/26 3:50 PM,00:07:09,In Store
+1351 Main Street,1700000000703184827,2,2,5/5/26 3:44 PM,2,,Nestor Ceballos,73,Dining Room,Dining Room,Lunch,Dine In,0.00,116.37,9.21,15.00,0.00,140.58,false,5/5/26 5:34 PM,5/5/26 5:34 PM,01:49:54,In Store
+1351 Main Street,1700000000705013083,3,3,5/5/26 5:12 PM,1,,Christopher Moran,Bar3,Dining Room,Dining Room,Dinner,Dine In,0.00,0.00,0.00,0.00,0.00,0.00,false,5/5/26 5:58 PM,5/5/26 5:58 PM,00:46:06,In Store
+1351 Main Street,1700000000705204025,4,4,5/5/26 5:35 PM,2,,Christopher Moran,Bar2,Dining Room,Dining Room,Dinner,Dine In,0.00,37.40,2.97,20.00,0.00,60.37,false,5/5/26 5:43 PM,5/5/26 6:24 PM,00:08:32,In Store
+1351 Main Street,1700000000705326989,5,5,5/5/26 5:42 PM,1,,Nestor Ceballos,81,Dining Room,Dining Room,Dinner,Dine In,0.00,129.88,0.00,0.00,0.00,129.88,false,5/5/26 9:06 PM,5/5/26 9:06 PM,03:23:30,In Store
+1351 Main Street,1700000000705579445,6,6,5/5/26 5:58 PM,4,,Christopher Moran,88,Dining Room,Dining Room,Dinner,Dine In,0.00,472.74,37.45,200.00,0.00,710.19,false,5/5/26 7:42 PM,5/5/26 7:42 PM,01:43:05,In Store
+1351 Main Street,1700000000705598005,7,7,5/5/26 6:00 PM,2,,Christopher Moran,Bar3,Dining Room,Dining Room,Dinner,Dine In,0.00,124.68,9.90,0.00,0.00,134.58,false,5/5/26 7:46 PM,5/5/26 7:46 PM,01:45:58,In Store
+1351 Main Street,1700000000705777903,8,8,5/5/26 6:12 PM,1,,Nestor Ceballos,Bar4,Dining Room,Dining Room,Dinner,Dine In,0.00,0.00,0.00,0.00,0.00,0.00,true,5/5/26 6:13 PM,5/5/26 6:13 PM,00:00:23,In Store
+1351 Main Street,1700000000705874710,9,9,5/5/26 6:19 PM,1,,Nestor Ceballos,Bar6,Dining Room,Dining Room,Dinner,Dine In,0.00,18.70,1.48,0.00,0.00,20.18,false,5/5/26 6:22 PM,5/5/26 6:22 PM,00:03:12,In Store
+1351 Main Street,1700000000706746806,10,10,5/5/26 7:47 PM,2,,Christopher Moran,Bar9,Dining Room,Dining Room,Dinner,Dine In,0.00,24.94,1.98,5.20,0.00,32.12,false,5/5/26 7:48 PM,5/5/26 7:48 PM,00:01:14,In Store
+1351 Main Street,1700000000706933073,11,11,5/5/26 8:19 PM,4,,Nestor Ceballos,80,Dining Room,Dining Room,Dinner,Dine In,0.00,49.87,3.96,0.00,0.00,53.83,false,5/5/26 9:46 PM,5/5/26 9:46 PM,01:27:33,In Store
+1351 Main Street,1700000000707128054,12,12,5/5/26 9:05 PM,3,,Nestor Ceballos,82,Dining Room,Dining Room,Dinner,Dine In,0.00,130.91,10.40,34.10,0.00,175.41,false,5/5/26 10:18 PM,5/5/26 10:18 PM,01:13:12,In Store
+1351 Main Street,1700000000707247483,13,13,5/5/26 9:53 PM,2,,Nestor Ceballos,Bar7,Dining Room,Dining Room,Dinner,Dine In,0.00,41.56,3.30,10.82,0.00,55.68,false,5/5/26 9:53 PM,5/5/26 9:53 PM,00:00:51,In Store
