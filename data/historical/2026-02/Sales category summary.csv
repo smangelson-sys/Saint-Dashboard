@@ -1,0 +1,9 @@
+Sales category,Items,Net sales,Discount amount,Refund amount,Gross sales,Tax amount
+Bottled Beer,68.0,595.8,16.2,0.0,612.0,48.5
+Food,375.0,12123.6,42.4,0.0,12166.0,999.23
+Liquor,507.0,10179.3,328.7,38.0,10546.0,839.7
+NA Beverage,68.0,443.2,10.8,0.0,454.0,35.9
+No Sales Category Assigned,12.0,389.0,0.0,0.0,389.0,32.1
+Non-Grat Svc Charges,344.0,1351.28,0.0,1.52,1352.8,0.0
+Wine,354.0,9910.0,133.0,0.0,10043.0,817.03
+Total,1728.0,34992.18,531.1,39.52,35562.8,2772.46
