@@ -29,6 +29,20 @@ pkey = None
 if SFTP_KEY_DATA:
     print("Loading SSH key from environment variable...")
     key_str = SFTP_KEY_DATA.strip()
+    print(f"Key length: {len(key_str)}, starts with: {key_str[:30]}...")
+
+    # GitHub Actions may strip newlines from secrets passed as env vars
+    # Reconstruct proper OPENSSH key format if newlines are missing
+    if '\n' not in key_str and '-----BEGIN' in key_str:
+        print("Key has no newlines - reconstructing format...")
+        # Extract the header, base64 body, and footer
+        key_str = key_str.replace('-----BEGIN OPENSSH PRIVATE KEY-----', '')
+        key_str = key_str.replace('-----END OPENSSH PRIVATE KEY-----', '')
+        body = key_str.strip()
+        # Re-wrap base64 body at 70 chars per line
+        lines = [body[i:i+70] for i in range(0, len(body), 70)]
+        key_str = '-----BEGIN OPENSSH PRIVATE KEY-----\n' + '\n'.join(lines) + '\n-----END OPENSSH PRIVATE KEY-----\n'
+        print(f"Reconstructed key: {len(key_str)} bytes, {key_str.count(chr(10))} newlines")
 
     # Use cryptography library to parse OPENSSH format and convert to PEM
     from cryptography.hazmat.primitives import serialization
