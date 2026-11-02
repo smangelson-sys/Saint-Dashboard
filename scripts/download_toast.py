@@ -22,10 +22,10 @@ if os.path.exists(tracking_file):
         downloaded = set(json.load(f))
 
 print(f"Connecting to {SFTP_HOST} as {SFTP_USER}...")
-key = paramiko.RSAKey.from_private_key_file(SFTP_KEY)
-transport = paramiko.Transport((SFTP_HOST, 22))
-transport.connect(username=SFTP_USER, pkey=key)
-sftp = paramiko.SFTPClient.from_transport(transport)
+client = paramiko.SSHClient()
+client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+client.connect(SFTP_HOST, username=SFTP_USER, key_filename=SFTP_KEY)
+sftp = client.open_sftp()
 
 # Navigate to restaurant export directory
 try:
@@ -70,7 +70,7 @@ for date_dir in new_dates:
     downloaded.add(date_dir)
 
 sftp.close()
-transport.close()
+client.close()
 
 # Save tracking
 with open(tracking_file, 'w') as f:
