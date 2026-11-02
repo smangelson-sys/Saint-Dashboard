@@ -63,8 +63,8 @@ if os.path.isdir(EXPORTS):
             try:
                 with open(order_file) as f:
                     for r in csv.DictReader(f):
-                        if r.get('Void?', 'false').lower() != 'true':
-                            toast_monthly[m_key]['ns'] += float(r.get('Net Price', '0') or '0')
+                        if r.get('Voided', 'false').lower() != 'true':
+                            toast_monthly[m_key]['ns'] += float(r.get('Amount', '0') or '0')
                             toast_monthly[m_key]['t'] += float(r.get('Tip', '0') or '0')
                             toast_monthly[m_key]['o'] += 1
             except Exception as e:
@@ -119,13 +119,13 @@ if os.path.isdir(EXPORTS):
                 seen_orders = set()
                 with open(order_file) as f:
                     for r in csv.DictReader(f):
-                        if r.get('Void?', 'false').lower() != 'true':
+                        if r.get('Voided', 'false').lower() != 'true':
                             oid = r.get('Order Id', '')
                             if oid not in seen_orders:
                                 seen_orders.add(oid)
                                 day_o += 1
-                                day_g += int(r.get('Guest Count', '0') or '0')
-                            day_ns += float(r.get('Net Price', '0') or '0')
+                                day_g += int(r.get('# of Guests', '0') or '0')
+                            day_ns += float(r.get('Amount', '0') or '0')
                             day_t += float(r.get('Tip', '0') or '0')
                 daily.append({'d': ds, 'ns': round(day_ns, 2), 't': round(day_t, 2), 'o': day_o, 'g': day_g})
             except Exception as e:
