@@ -1,0 +1,50 @@
+name: Nightly Toast Data Update
+
+on:
+  schedule:
+    # Run at 7:15 AM Pacific (14:15 UTC) every day
+    - cron: '15 14 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install paramiko
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.TOAST_SSH_KEY }}" > ~/.ssh/toast_key
+          chmod 600 ~/.ssh/toast_key
+
+      - name: Download Toast exports
+        run: python scripts/download_toast.py
+        env:
+          SFTP_HOST: s-9b0f88558b264dfda.server.transfer.us-east-1.amazonaws.com
+          SFTP_USER: SaintDataExportUser
+          SFTP_KEY: ~/.ssh/toast_key
+          EXPORT_ID: "321496"
+
+      - name: Build dashboard data
+        run: python scripts/build_data.py
+
+      - name: Build dashboard HTML
+        run: python scripts/build_dashboard.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          force_orphan: true
