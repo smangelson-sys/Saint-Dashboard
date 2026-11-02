@@ -31,18 +31,27 @@ if SFTP_KEY_DATA:
     key_str = SFTP_KEY_DATA.strip()
     print(f"Key length: {len(key_str)}, starts with: {key_str[:30]}...")
 
-    # GitHub Actions may strip newlines from secrets passed as env vars
-    # Reconstruct proper OPENSSH key format if newlines are missing
-    if '\n' not in key_str and '-----BEGIN' in key_str:
-        print("Key has no newlines - reconstructing format...")
-        # Extract the header, base64 body, and footer
-        key_str = key_str.replace('-----BEGIN OPENSSH PRIVATE KEY-----', '')
-        key_str = key_str.replace('-----END OPENSSH PRIVATE KEY-----', '')
-        body = key_str.strip()
-        # Re-wrap base64 body at 70 chars per line
+    # GitHub Actions may strip newlines and/or headers from secrets
+    # Reconstruct proper OPENSSH key format
+    if '-----BEGIN' in key_str:
+        # Has headers but maybe no newlines
+        if '\n' not in key_str:
+            print("Key has headers but no newlines - reconstructing...")
+            key_str = key_str.replace('-----BEGIN OPENSSH PRIVATE KEY-----', '')
+            key_str = key_str.replace('-----END OPENSSH PRIVATE KEY-----', '')
+            body = key_str.strip()
+            lines = [body[i:i+70] for i in range(0, len(body), 70)]
+            key_str = '-----BEGIN OPENSSH PRIVATE KEY-----\n' + '\n'.join(lines) + '\n-----END OPENSSH PRIVATE KEY-----\n'
+    else:
+        # Raw base64 body only - no headers at all
+        print("Key is raw base64 body - adding OPENSSH headers...")
+        body = key_str.replace('\n', '').replace('\r', '').replace(' ', '')
         lines = [body[i:i+70] for i in range(0, len(body), 70)]
         key_str = '-----BEGIN OPENSSH PRIVATE KEY-----\n' + '\n'.join(lines) + '\n-----END OPENSSH PRIVATE KEY-----\n'
-        print(f"Reconstructed key: {len(key_str)} bytes, {key_str.count(chr(10))} newlines")
+
+    # Also normalize CRLF to LF
+    key_str = key_str.replace('\r\n', '\n')
+    print(f"Final key: {len(key_str)} bytes, {key_str.count(chr(10))} newlines, starts: {key_str[:40]}...")
 
     # Use cryptography library to parse OPENSSH format and convert to PEM
     from cryptography.hazmat.primitives import serialization
