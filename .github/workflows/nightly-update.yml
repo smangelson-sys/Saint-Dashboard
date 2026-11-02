@@ -22,21 +22,12 @@ jobs:
       - name: Install dependencies
         run: pip install paramiko
 
-      - name: Set up SSH key
-        env:
-          SSH_KEY: ${{ secrets.TOAST_SSH_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/toast_key
-          chmod 600 ~/.ssh/toast_key
-          echo "Key file info:" && wc -c ~/.ssh/toast_key && head -1 ~/.ssh/toast_key && tail -1 ~/.ssh/toast_key
-
       - name: Download Toast exports
         run: python scripts/download_toast.py
         env:
           SFTP_HOST: s-9b0f88558b264dfda.server.transfer.us-east-1.amazonaws.com
           SFTP_USER: SaintDataExportUser
-          SFTP_KEY: ~/.ssh/toast_key
+          SFTP_KEY_DATA: ${{ secrets.TOAST_SSH_KEY }}
           EXPORT_ID: "321496"
 
       - name: Build dashboard data
