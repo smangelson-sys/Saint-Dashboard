@@ -23,10 +23,13 @@ jobs:
         run: pip install paramiko
 
       - name: Set up SSH key
+        env:
+          SSH_KEY: ${{ secrets.TOAST_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.TOAST_SSH_KEY }}" | tr -d '\r' > ~/.ssh/toast_key
+          echo "$SSH_KEY" > ~/.ssh/toast_key
           chmod 600 ~/.ssh/toast_key
+          echo "Key file info:" && wc -c ~/.ssh/toast_key && head -1 ~/.ssh/toast_key && tail -1 ~/.ssh/toast_key
 
       - name: Download Toast exports
         run: python scripts/download_toast.py
