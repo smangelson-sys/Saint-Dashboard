@@ -1,0 +1,6 @@
+Location,Entry Id,Created Date,Action,Amount,Cash Drawer,Payout Reason,No Sale Reason,Comment,Employee,Employee 2
+1351 Main Street,1700000000705911652,5/5/26 6:22 PM,CASH_PAYMENT,20.18,Bar Printer,,,Cash payment,Nestor Ceballos,
+1351 Main Street,1700000000707127278,5/5/26 9:06 PM,CASH_PAYMENT,129.88,Bar Printer,,,Cash payment,Nestor Ceballos,
+1351 Main Street,1700000000707232445,5/5/26 9:46 PM,CASH_PAYMENT,53.83,Bar Printer,,,Cash payment,Nestor Ceballos,
+1351 Main Street,1700000000707340378,5/5/26 10:51 PM,CLOSE_OUT_SHORTAGE,-426.89,Bar Printer,,,125 gift card reload plus 330,Nestor Ceballos,
+1351 Main Street,1700000000707342157,5/5/26 10:52 PM,CLOSE_OUT_OVERAGE,330.00,Bar Printer (2),,,Close out balance is over,Nestor Ceballos,
