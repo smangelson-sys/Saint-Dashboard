@@ -3,12 +3,13 @@ Download Toast SFTP daily exports.
 Runs in GitHub Actions with environment variables for config.
 Downloads the last 7 days of exports (Toast keeps files for 7 days).
 """
-import paramiko, os, json, stat
+import paramiko, os, json, io
 from datetime import datetime, timedelta
 
 SFTP_HOST = os.environ.get('SFTP_HOST', 's-9b0f88558b264dfda.server.transfer.us-east-1.amazonaws.com')
 SFTP_USER = os.environ.get('SFTP_USER', 'SaintDataExportUser')
-SFTP_KEY = os.path.expanduser(os.environ.get('SFTP_KEY', '~/.ssh/toast_key'))
+SFTP_KEY_DATA = os.environ.get('SFTP_KEY_DATA', '')  # Key content from env var
+SFTP_KEY_FILE = os.path.expanduser(os.environ.get('SFTP_KEY', '~/.ssh/toast_key'))
 EXPORT_ID = os.environ.get('EXPORT_ID', '321496')
 DATA_DIR = 'data/exports'
 
@@ -22,9 +23,41 @@ if os.path.exists(tracking_file):
         downloaded = set(json.load(f))
 
 print(f"Connecting to {SFTP_HOST} as {SFTP_USER}...")
+
+# Load SSH key - prefer env var (avoids file corruption), fall back to file
+pkey = None
+if SFTP_KEY_DATA:
+    print("Loading SSH key from environment variable...")
+    key_str = SFTP_KEY_DATA.strip()
+    key_file = io.StringIO(key_str)
+    try:
+        pkey = paramiko.RSAKey.from_private_key(key_file)
+        print("Loaded RSA key from env var")
+    except Exception as e1:
+        print(f"RSA failed: {e1}, trying Ed25519...")
+        key_file = io.StringIO(key_str)
+        try:
+            pkey = paramiko.Ed25519Key.from_private_key(key_file)
+            print("Loaded Ed25519 key from env var")
+        except Exception as e2:
+            print(f"Ed25519 failed: {e2}, trying ECDSAKey...")
+            key_file = io.StringIO(key_str)
+            try:
+                pkey = paramiko.ECDSAKey.from_private_key(key_file)
+                print("Loaded ECDSA key from env var")
+            except Exception as e3:
+                print(f"All key types failed from env var. RSA: {e1}, Ed25519: {e2}, ECDSA: {e3}")
+                raise
+
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-client.connect(SFTP_HOST, username=SFTP_USER, key_filename=SFTP_KEY)
+
+if pkey:
+    client.connect(SFTP_HOST, username=SFTP_USER, pkey=pkey)
+else:
+    print(f"Loading SSH key from file: {SFTP_KEY_FILE}")
+    client.connect(SFTP_HOST, username=SFTP_USER, key_filename=SFTP_KEY_FILE)
+
 sftp = client.open_sftp()
 
 # Navigate to restaurant export directory
