@@ -29,25 +29,24 @@ pkey = None
 if SFTP_KEY_DATA:
     print("Loading SSH key from environment variable...")
     key_str = SFTP_KEY_DATA.strip()
-    key_file = io.StringIO(key_str)
+
+    # Use cryptography library to parse OPENSSH format and convert to PEM
+    from cryptography.hazmat.primitives import serialization
+    key_bytes = key_str.encode('utf-8')
     try:
-        pkey = paramiko.RSAKey.from_private_key(key_file)
-        print("Loaded RSA key from env var")
-    except Exception as e1:
-        print(f"RSA failed: {e1}, trying Ed25519...")
-        key_file = io.StringIO(key_str)
-        try:
-            pkey = paramiko.Ed25519Key.from_private_key(key_file)
-            print("Loaded Ed25519 key from env var")
-        except Exception as e2:
-            print(f"Ed25519 failed: {e2}, trying ECDSAKey...")
-            key_file = io.StringIO(key_str)
-            try:
-                pkey = paramiko.ECDSAKey.from_private_key(key_file)
-                print("Loaded ECDSA key from env var")
-            except Exception as e3:
-                print(f"All key types failed from env var. RSA: {e1}, Ed25519: {e2}, ECDSA: {e3}")
-                raise
+        private_key = serialization.load_ssh_private_key(key_bytes, password=None)
+        pem_bytes = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+        pem_str = pem_bytes.decode('utf-8')
+        print(f"Converted key to PEM format ({len(pem_str)} bytes)")
+        pkey = paramiko.RSAKey.from_private_key(io.StringIO(pem_str))
+        print("Loaded RSA key from env var (via PEM conversion)")
+    except Exception as e:
+        print(f"Key loading failed: {e}")
+        raise
 
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
