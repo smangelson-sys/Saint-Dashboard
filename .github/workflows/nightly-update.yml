@@ -27,6 +27,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.TOAST_SSH_KEY }}" > ~/.ssh/toast_key
           chmod 600 ~/.ssh/toast_key
+          ssh-keygen -p -m PEM -f ~/.ssh/toast_key -N "" -q
 
       - name: Download Toast exports
         run: python scripts/download_toast.py
