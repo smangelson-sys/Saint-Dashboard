@@ -119,7 +119,9 @@ if os.path.isdir(toast_hist):
             try:
                 with open(sbd) as f:
                     for r in csv.DictReader(f):
-                        raw = r.get('Date', '')
+                        raw = r.get('Date', '').strip()
+                        if not raw:
+                            continue
                         # Convert MM/DD/YYYY to YYYY-MM-DD
                         if '/' in raw:
                             parts = raw.split('/')
