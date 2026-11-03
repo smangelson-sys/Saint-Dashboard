@@ -105,6 +105,32 @@ if os.path.exists(sq_daily):
                 'o': int(r['Orders'])
             })
 
+# Toast daily from historical Sales by day.csv
+if os.path.isdir(toast_hist):
+    for m in sorted(os.listdir(toast_hist)):
+        p = os.path.join(toast_hist, m)
+        sbd = os.path.join(p, 'Sales by day.csv')
+        if os.path.isdir(p) and os.path.exists(sbd):
+            try:
+                with open(sbd) as f:
+                    for r in csv.DictReader(f):
+                        raw = r.get('Date', '')
+                        # Convert MM/DD/YYYY to YYYY-MM-DD
+                        if '/' in raw:
+                            parts = raw.split('/')
+                            ds = f"{parts[2]}-{parts[0].zfill(2)}-{parts[1].zfill(2)}"
+                        else:
+                            ds = raw
+                        daily.append({
+                            'd': ds,
+                            'ns': round(float(r.get('Net sales', '0') or '0'), 2),
+                            't': 0,
+                            'o': int(r.get('Total orders', '0') or '0'),
+                            'g': int(r.get('Total guests', '0') or '0')
+                        })
+            except Exception as e:
+                print(f"  Warning processing historical daily {m}: {e}")
+
 # Toast daily from exports
 if os.path.isdir(EXPORTS):
     for dd in sorted(os.listdir(EXPORTS)):
