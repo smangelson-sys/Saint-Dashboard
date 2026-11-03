@@ -236,7 +236,9 @@ if (D.daily && D.daily.length) {{
   const dow = [0,0,0,0,0,0,0].map(()=>({{s:0,c:0}}));
   const dowNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   d.forEach(x => {{
+    if (!x.d) return;
     const di = new Date(x.d + 'T12:00:00').getDay();
+    if (isNaN(di)) return;
     dow[di].s += x.ns;
     dow[di].c++;
   }});
