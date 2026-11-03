@@ -3,8 +3,13 @@ Aggregate all data sources into dashboard_data.json.
 Reads: Square historical CSVs + Toast daily exports.
 Writes: data/dashboard_data.json
 """
-import csv, json, os
+import csv, json, os, re
 from collections import defaultdict
+
+def parse_dollar(v):
+    """Strip $ and parse as float, handling empty/None."""
+    if not v: return 0.0
+    return float(re.sub(r'[,$]', '', str(v).strip()) or '0')
 
 DATA = 'data'
 SQ = DATA + '/square_historical'
@@ -201,6 +206,58 @@ if os.path.isdir(EXPORTS):
     for m in mi:
         si = sorted(mi[m].items(), key=lambda x: x[1]['r'], reverse=True)[:20]
         items['T_' + m] = [{'n': k, 'q': v['q'], 'r': round(v['r'], 2)} for k, v in si]
+
+# Toast items from historical monthly CSVs (scraped from Toast Web)
+HIST = DATA + '/historical'
+if os.path.isdir(HIST):
+    hi = defaultdict(lambda: defaultdict(lambda: {'q': 0, 'r': 0}))
+    for dd in sorted(os.listdir(HIST)):
+        ifile = os.path.join(HIST, dd, 'ItemSelectionDetails.csv')
+        if not os.path.exists(ifile):
+            continue
+        m = dd  # already YYYY-MM format
+        try:
+            with open(ifile) as f:
+                for r in csv.DictReader(f):
+                    voided = r.get('Voided', r.get('Void?', 'false'))
+                    if str(voided).strip().lower() in ('true', 'yes'):
+                        continue
+                    nm = r.get('Menu Item', 'Unknown').strip()
+                    q = int(float(r.get('Qty', '1') or '1'))
+                    net = parse_dollar(r.get('Net', r.get('Net Price', '0')))
+                    hi[m][nm]['q'] += q
+                    hi[m][nm]['r'] += net
+        except Exception as e:
+            print(f"  Warning processing historical items {dd}: {e}")
+
+    for m in hi:
+        key = 'T_' + m
+        if key not in items:  # don't overwrite exports data
+            si = sorted(hi[m].items(), key=lambda x: x[1]['r'], reverse=True)[:20]
+            items[key] = [{'n': k, 'q': v['q'], 'r': round(v['r'], 2)} for k, v in si]
+
+# Also update monthly totals from historical ItemSelectionDetails if not already present
+if os.path.isdir(HIST):
+    existing_months = {x['m'] for x in monthly}
+    for dd in sorted(os.listdir(HIST)):
+        ifile = os.path.join(HIST, dd, 'ItemSelectionDetails.csv')
+        if not os.path.exists(ifile) or dd in existing_months:
+            continue
+        try:
+            orders_seen = set()
+            ns = 0; item_count = 0
+            with open(ifile) as f:
+                for r in csv.DictReader(f):
+                    voided = r.get('Voided', r.get('Void?', 'false'))
+                    if str(voided).strip().lower() in ('true', 'yes'):
+                        continue
+                    orders_seen.add(r.get('Order Id', ''))
+                    item_count += int(float(r.get('Qty', '1') or '1'))
+                    ns += parse_dollar(r.get('Net', r.get('Net Price', '0')))
+            monthly.append({'m': dd, 's': 'T', 'ns': round(ns, 2), 't': 0, 'o': len(orders_seen), 'i': item_count})
+        except Exception as e:
+            print(f"  Warning processing historical monthly {dd}: {e}")
+    monthly.sort(key=lambda x: x['m'])
 
 # Toast categories from exports
 if os.path.isdir(EXPORTS):
