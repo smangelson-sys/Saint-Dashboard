@@ -92,6 +92,24 @@ if os.path.isdir(EXPORTS):
             monthly.append({'m': m_key, 's': 'T', 'ns': round(v['ns'], 2), 't': round(v['t'], 2), 'o': v['o'], 'i': v['i']})
 
 monthly.sort(key=lambda x: x['m'])
+
+# Merge months that appear from both Square and Toast (e.g. Feb 2026)
+merged = {}
+for x in monthly:
+    k = x['m']
+    if k in merged:
+        merged[k]['ns'] = round(merged[k]['ns'] + x['ns'], 2)
+        merged[k]['t'] = round(merged[k]['t'] + x['t'], 2)
+        merged[k]['o'] += x['o']
+        merged[k]['i'] += x['i']
+        # Mark as both sources
+        if merged[k]['s'] != x['s']:
+            merged[k]['s'] = 'B'
+    else:
+        merged[k] = dict(x)
+monthly = list(merged.values())
+monthly.sort(key=lambda x: x['m'])
+
 data['monthly'] = monthly
 print(f"Monthly: {len(monthly)} months")
 
@@ -284,6 +302,34 @@ if os.path.isdir(EXPORTS):
     for m in cat_monthly:
         items['C_' + m] = [{'n': k, 'q': v['q'], 'r': round(v['r'], 2)}
                            for k, v in sorted(cat_monthly[m].items(), key=lambda x: x[1]['r'], reverse=True)]
+
+# Merge items keys: combine "YYYY-MM" (Square) and "T_YYYY-MM" (Toast) into one key
+merged_items = {}
+for k, v in items.items():
+    # Normalize: strip T_ prefix to get canonical month key
+    canon = k[2:] if k.startswith('T_') else k
+    # Skip category keys (C_...)
+    if k.startswith('C_'):
+        merged_items[k] = v
+        continue
+    if canon not in merged_items:
+        merged_items[canon] = {}
+    for it in v:
+        nm = it['n']
+        if nm in merged_items[canon]:
+            merged_items[canon][nm]['q'] += it['q']
+            merged_items[canon][nm]['r'] = round(merged_items[canon][nm]['r'] + it['r'], 2)
+        else:
+            merged_items[canon][nm] = dict(it)
+# Convert back to sorted top-20 lists
+final_items = {}
+for k, v in merged_items.items():
+    if k.startswith('C_'):
+        final_items[k] = v
+    else:
+        si = sorted(v.values(), key=lambda x: x['r'], reverse=True)[:20]
+        final_items[k] = si
+items = final_items
 
 data['items'] = items
 print(f"Items: {len(items)} month-groups")
