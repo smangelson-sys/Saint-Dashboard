@@ -137,7 +137,7 @@ if (D.daily && D.daily.length) {{
   p.innerHTML = kpiHtml;
 
   const labels = m.map(x => x.m);
-  const colors = m.map(x => x.s === 'T' ? '#e94560' : '#0f3460');
+  const colors = m.map(x => x.s === 'T' ? '#e94560' : x.s === 'B' ? '#9b59b6' : '#0f3460');
 
   new Chart(document.getElementById('monthlyChart'), {{
     type: 'bar',
@@ -287,19 +287,12 @@ if (D.daily && D.daily.length) {{
 (function() {{
   const p = document.getElementById('p-items');
   const items = D.items || {{}};
-  const months = Object.keys(items).filter(k => !k.startsWith('C_') && !k.startsWith('T_')).sort();
-  const tMonths = Object.keys(items).filter(k => k.startsWith('T_')).sort();
+  const allMonths = Object.keys(items).filter(k => !k.startsWith('C_')).sort((a,b) => b.localeCompare(a));
   const catMonths = Object.keys(items).filter(k => k.startsWith('C_')).sort();
 
   let html = '<div class="filter-row"><select id="itemMonthSel">';
-  const allMonths = [...months, ...tMonths].sort((a,b) => {{
-    const ka = a.replace('T_','');
-    const kb = b.replace('T_','');
-    return kb.localeCompare(ka);
-  }});
   allMonths.forEach(m => {{
-    const label = m.startsWith('T_') ? m.substring(2)+' (Toast)' : m+' (Square)';
-    html += `<option value="${{m}}">${{label}}</option>`;
+    html += `<option value="${{m}}">${{m}}</option>`;
   }});
   html += '</select></div>';
 
