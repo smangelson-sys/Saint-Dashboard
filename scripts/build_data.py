@@ -245,6 +245,8 @@ if os.path.isdir(HIST):
                     if str(voided).strip().lower() in ('true', 'yes'):
                         continue
                     nm = r.get('Menu Item', 'Unknown').strip()
+                    if not nm or nm == 'Unknown':
+                        continue
                     q = int(float(r.get('Qty', '1') or '1'))
                     net = parse_dollar(r.get('Net', r.get('Net Price', '0')))
                     hi[m][nm]['q'] += q
