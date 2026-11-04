@@ -237,8 +237,10 @@ if os.path.isdir(HIST):
             continue
         m = dd  # already YYYY-MM format
         try:
-            with open(ifile) as f:
-                for r in csv.DictReader(f):
+            with open(ifile, newline='') as f:
+                reader = csv.DictReader(f)
+                reader.fieldnames = [h.strip() for h in reader.fieldnames]
+                for r in reader:
                     voided = r.get('Voided', r.get('Void?', 'false'))
                     if str(voided).strip().lower() in ('true', 'yes'):
                         continue
@@ -252,9 +254,9 @@ if os.path.isdir(HIST):
 
     for m in hi:
         key = 'T_' + m
-        if key not in items:  # don't overwrite exports data
-            si = sorted(hi[m].items(), key=lambda x: x[1]['r'], reverse=True)[:20]
-            items[key] = [{'n': k, 'q': v['q'], 'r': round(v['r'], 2)} for k, v in si]
+        # Historical data (aggregated from Toast Items Sold Report) overrides raw daily exports
+        si = sorted(hi[m].items(), key=lambda x: x[1]['r'], reverse=True)[:20]
+        items[key] = [{'n': k, 'q': v['q'], 'r': round(v['r'], 2)} for k, v in si]
 
 # Also update monthly totals from historical ItemSelectionDetails if not already present
 if os.path.isdir(HIST):
@@ -266,8 +268,10 @@ if os.path.isdir(HIST):
         try:
             orders_seen = set()
             ns = 0; item_count = 0
-            with open(ifile) as f:
-                for r in csv.DictReader(f):
+            with open(ifile, newline='') as f:
+                reader = csv.DictReader(f)
+                reader.fieldnames = [h.strip() for h in reader.fieldnames]
+                for r in reader:
                     voided = r.get('Voided', r.get('Void?', 'false'))
                     if str(voided).strip().lower() in ('true', 'yes'):
                         continue
