@@ -347,7 +347,7 @@ html = '<!DOCTYPE html>\n<html lang="en">\n<head>\n'
 html += '<meta charset="UTF-8">\n'
 html += '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">\n'
 html += '<title>The Saint - Dashboard</title>\n'
-html += '<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.7/chart.umd.min.js"></scr' + 'ipt>\n'
+html += '<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.6.1/chart.umd.min.js"></scr' + 'ipt>\n'
 html += '<style>' + CSS + '</style>\n'
 html += '</head>\n<body>\n'
 html += BODY
